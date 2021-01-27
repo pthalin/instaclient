@@ -368,7 +368,65 @@ class Scraper(Component):
                 LOGGER.debug(f'Deep scraped {index} posts out of {len(shortcodes)}')
                 posts.append(self.get_post(shortcode))
             return posts
- 
+    
+    @Component._login_required
+    def get_liked_by(self:'InstaClient', shortcode:str):
+        """Scrape an instagram post for liked by users
+
+        Args:
+            user (str): Shortcode for post to scrape
+
+        Returns:
+            Union[List[str]], Optional[str]]: List of instagram 
+                usernames that likes  post
+        
+        Raises:
+            TODO
+
+        """
+        finished_warning = False
+        liked_by = list()
+        post = self.get_post(shortcode)
+        count = post.likes_count
+
+        self._nav_post(shortcode)
+
+        try:
+            likes_btn = self._find_element(EC.presence_of_element_located((By.XPATH, Paths.LIKES_BTN)))
+            self._press_button(likes_btn)
+            time.sleep(2)
+            LOGGER.info(f'Liked by for post <{shortcode}>')
+
+            while len(liked_by) < count:
+                scraped_count = len(liked_by)
+                divs = self._find_element(EC.presence_of_all_elements_located((By.XPATH, Paths.LIKED_BY_DIV)), wait_time=2)
+
+                for div in divs:
+                    username = div.text.split('\n')[0]
+                    if username not in liked_by and username not in('Follow',) and len(liked_by) < count:
+                                liked_by.append(username)
+
+                if len(liked_by) >= count:
+                    break
+
+                if not finished_warning and len(liked_by) == scraped_count:
+                    if len(followers) == profile.follower_count:
+                        LOGGER.info('Finished Liked by')
+                        break
+                    LOGGER.info('Detected End of Liked by Page')
+                    finished_warning = True
+                    time.sleep(3)
+                elif finished_warning:
+                    LOGGER.info('Finished Liked by')
+                    break
+                else:
+                    finished_warning = False
+
+                self.scroll(mode=self.END_PAGE_SCROLL, times=2, interval=1)
+            return liked_by
+        except Exception as error:
+            LOGGER.error(f'There was an error when getting likes for the Post<{shortcode}>', exc_info=error)
+            return None
 
     @Component._login_required
     def get_followers(self:'InstaClient', user:str, count:int, use_api:bool=True, deep_scrape:Optional[bool]=False, end_cursor:str=None, callback_frequency:int=100, callback=None, **callback_args) -> Optional[Union[List[Profile], List[str]]]:

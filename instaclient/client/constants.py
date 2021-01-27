@@ -48,6 +48,8 @@ class Paths:
     LIKE_BTN = '//span[@class="fr66n"]//descendant::button'
     COMMENT_BTN = '//span[@class="_15y0l"]'
     SHARE_POST_BTN = '//*[@id="react-root"]/section/main/div/div/article/div[3]/section[1]/button' # TODO critical
+    LIKES_BTN = '//div[@class="Nm9Fw"]//descendant::a'
+
 
     # Follow User Procedure
     FOLLOW_BTN = '//button[@class="sqdOP  L3NKy _4pI4F  y3zKF     " or @class="_5f5mN       jIbKX  _6VtSN     yZn4P   "]'
@@ -91,6 +93,8 @@ class Paths:
     FOLLOWERS_LIST = '//ul[@class=" jjbaz _6xe7A"]'
     FOLLOWER_USER_DIV = '{}//li'.format(FOLLOWERS_LIST)
     FOLLOWER_COUNT = '{}//span[@class="g47SY lOXF2"]'.format(FOLLOWERS_BTN)
+
+    LIKED_BY_DIV = '//div[@class="                     Igw0E   rBNOH        eGOV_     ybXk5    _4EzTm                                                                                                              "]'
 
     # Scrape User Posts Procedure
     SHORTCODE_DIV = '//div[@class="v1Nh3 kIKUG  _bz0w"]//descendant::a'
